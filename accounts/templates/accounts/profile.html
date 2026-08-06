@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - CodeSmell Detector{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="premium-card p-4">
+                <div class="text-center">
+                    {% if user.profile.profile_pic %}
+                        <img src="{{ user.profile.profile_pic.url }}" class="rounded-circle mb-3" width="150" height="150" style="object-fit: cover;">
+                    {% else %}
+                        <div class="avatar-large mx-auto mb-3 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 150px; height: 150px; font-size: 48px;">
+                            {{ user.username|first|upper }}
+                        </div>
+                    {% endif %}
+                    
+                    <h3>{{ user.username }}</h3>
+                    <p class="text-muted">{{ user.email }}</p>
+                    
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge bg-primary">Member since {{ user.date_joined|date:"M Y" }}</span>
+                        <span class="badge bg-success">{{ user.profile.total_analyses }} Analyses</span>
+                    </div>
+                    
+                    <button class="btn btn-outline-premium w-100 mb-3" data-bs-toggle="collapse" data-bs-target="#editProfile">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                    
+                    <div class="api-key-section p-3 bg-light rounded">
+                        <label class="small text-muted">API Key</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" value="{{ user.profile.api_key }}" id="apiKey" readonly>
+                            <button class="btn btn-sm btn-outline-primary" type="button" onclick="copyApiKey()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" type="button" onclick="regenerateApiKey()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Stats -->
+            <div class="premium-card p-4 mt-4">
+                <h5>Account Statistics</h5>
+                <hr>
+                <div class="stat-item d-flex justify-content-between mb-2">
+                    <span>Total Analyses:</span>
+                    <strong>{{ user.profile.total_analyses }}</strong>
+                </div>
+                <div class="stat-item d-flex justify-content-between mb-2">
+                    <span>Files Analyzed:</span>
+                    <strong>{{ user.profile.total_files_analyzed }}</strong>
+                </div>
+                <div class="stat-item d-flex justify-content-between mb-2">
+                    <span>Last Login:</span>
+                    <strong>{{ user.last_login|date:"M d, Y" }}</strong>
+                </div>
+                <div class="stat-item d-flex justify-content-between">
+                    <span>Account Status:</span>
+                    <span class="badge bg-success">Active</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- Edit Profile Form (Collapsible) -->
+            <div class="collapse mb-4" id="editProfile">
+                <div class="premium-card p-4">
+                    <h4 class="mb-3">Edit Profile</h4>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ user.email }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" name="bio" rows="3">{{ user.profile.bio }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" name="location" value="{{ user.profile.location }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" name="profile_pic" accept="image/*">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-premium">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#editProfile">
+                            Cancel
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="premium-card p-4">
+                <h4 class="mb-3">Recent Activity</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in activities %}
+                            <tr>
+                                <td>
+                                    {% if activity.activity_type == 'LOGIN' %}
+                                        <span class="badge bg-success">Login</span>
+                                    {% elif activity.activity_type == 'TRAIN' %}
+                                        <span class="badge bg-primary">Training</span>
+                                    {% elif activity.activity_type == 'PREDICT' %}
+                                        <span class="badge bg-info">Prediction</span>
+                                    {% elif activity.activity_type == 'DOWNLOAD' %}
+                                        <span class="badge bg-warning">Download</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ activity.activity_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ activity.description }}</td>
+                                <td>{{ activity.created_at|timesince }} ago</td>
+                                <td><small>{{ activity.ip_address }}</small></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No recent activity</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Account Settings -->
+            <div class="premium-card p-4 mt-4">
+                <h4 class="mb-3">Account Settings</h4>
+                
+                <div class="setting-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <div>
+                        <h6 class="mb-1">Email Notifications</h6>
+                        <small class="text-muted">Receive email updates about your analyses</small>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked>
+                    </div>
+                </div>
+                
+                <div class="setting-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <div>
+                        <h6 class="mb-1">Two-Factor Authentication</h6>
+                        <small class="text-muted">Add extra security to your account</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary">Enable</button>
+                </div>
+                
+                <div class="setting-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <div>
+                        <h6 class="mb-1">Change Password</h6>
+                        <small class="text-muted">Update your password regularly</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary">Change</button>
+                </div>
+                
+                <div class="setting-item d-flex justify-content-between align-items-center p-3">
+                    <div>
+                        <h6 class="mb-1 text-danger">Delete Account</h6>
+                        <small class="text-muted">Permanently delete your account and data</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyApiKey() {
+    var apiKey = document.getElementById('apiKey');
+    apiKey.select();
+    apiKey.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    
+    // Show toast notification
+    alert('API key copied to clipboard!');
+}
+
+function regenerateApiKey() {
+    if(confirm('Are you sure you want to regenerate your API key? The old key will stop working immediately.')) {
+        // AJAX call to regenerate key
+        fetch('/accounts/regenerate-api-key/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('apiKey').value = data.api_key;
+                alert('API key regenerated successfully!');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
