@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg navbar-premium">
+    <div class="container-fluid">
+        <button type="button" id="sidebarCollapse" class="btn btn-outline-premium">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="ms-auto d-flex align-items-center">
+            <!-- Search -->
+            <div class="input-group me-3" style="width: 300px;">
+                <span class="input-group-text bg-transparent border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" placeholder="Search analyses..." id="searchInput">
+            </div>
+            
+            <!-- Notifications -->
+            <div class="dropdown me-3">
+                <button class="btn btn-outline-premium position-relative" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        3
+                    </span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">Notifications</h6></li>
+                    <li><a class="dropdown-item" href="#">Training completed</a></li>
+                    <li><a class="dropdown-item" href="#">New analysis ready</a></li>
+                    <li><a class="dropdown-item" href="#">Model updated</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">View all</a></li>
+                </ul>
+            </div>
+            
+            <!-- User Menu -->
+            <div class="dropdown">
+                <button class="btn btn-outline-premium" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle me-2"></i>
+                    {{ user.username }}
+                    <i class="fas fa-chevron-down ms-2 small"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                        <i class="fas fa-user me-2"></i>Profile
+                    </a></li>
+                    <li><a class="dropdown-item" href="#">
+                        <i class="fas fa-cog me-2"></i>Settings
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'detector:api_docs' %}">
+                        <i class="fas fa-key me-2"></i>API Key
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

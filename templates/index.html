@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - CodeSmell Detector{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center min-vh-75 py-5">
+        <div class="col-lg-6">
+            <h1 class="display-3 fw-bold mb-4">
+                <span class="text-primary">AI-Powered</span><br>
+                Code Smell Detection
+            </h1>
+            <p class="lead text-muted mb-4">
+                Automatically detect poor design patterns and code smells across 10+ programming languages 
+                using advanced machine learning algorithms.
+            </p>
+            
+            {% if not user.is_authenticated %}
+                <div class="d-flex gap-3">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Get Started
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                </div>
+            {% else %}
+                <a href="{% url 'detector:dashboard' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                </a>
+            {% endif %}
+            
+            <!-- Stats -->
+            <div class="row mt-5">
+                <div class="col-4">
+                    <h3 class="fw-bold text-primary">10+</h3>
+                    <small class="text-muted">Languages</small>
+                </div>
+                <div class="col-4">
+                    <h3 class="fw-bold text-primary">95%</h3>
+                    <small class="text-muted">Accuracy</small>
+                </div>
+                <div class="col-4">
+                    <h3 class="fw-bold text-primary">&lt;2s</h3>
+                    <small class="text-muted">Analysis</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary me-2">sample.py</span>
+                    <span class="text-muted">Python</span>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded" style="font-size: 14px;">
+<span style="color: #ff79c6;">def</span> <span style="color: #50fa7b;">process_data</span>(data):
+    <span style="color: #ff79c6;">if</span> data:
+        <span style="color: #ff79c6;">for</span> item <span style="color: #ff79c6;">in</span> data:
+            <span style="color: #ff79c6;">if</span> item.valid:
+                <span style="color: #ff79c6;">if</span> item.value > 100:
+                    <span style="color: #6272a4;"># Long method detected</span>
+                    <span style="color: #ff79c6;">for</span> x <span style="color: #ff79c6;">in</span> range(item.value):
+                        process(x)
+                <span style="color: #ff79c6;">else</span>:
+                    process(item.value)
+    <span style="color: #ff79c6;">return</span> <span style="color: #f1fa8c;">None</span>
+                </pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features -->
+    <div class="row g-4 py-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon primary mx-auto mb-3">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h5>ML-Powered</h5>
+                    <p class="text-muted">Random Forest algorithm with 95% accuracy</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon success mx-auto mb-3">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h5>Multi-Language</h5>
+                    <p class="text-muted">Python, Java, JavaScript, PHP, C++, and more</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon warning mx-auto mb-3">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>Rich Analytics</h5>
+                    <p class="text-muted">Detailed reports with visualizations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
