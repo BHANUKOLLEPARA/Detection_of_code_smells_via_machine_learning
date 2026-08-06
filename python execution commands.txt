@@ -1,0 +1,29 @@
+rmdir /s /q venv 	- remove venev 
+
+py -m venv venv 	- remake them
+
+venv\Scripts\activate     	- activate
+
+venv\Scripts\python -m pip install -r requirements.txt   - install requirements
+
+
+
+venv\Scripts\python -m pip install requests(replace)  - if any module is not found
+
+py -m pip install --upgrade pip         - upgrade pip
+
+py manage.py runserver  	- run the project
+
+
+pip freeze > requirements.txt 		- freeze requirements
+
+
+py manage.py makemigrations accounts(replace)	- check if any changes done error module 
+
+py manage.py migrate			- if any changes found migrate them
+
+
+py manage.py shell		exit()
+
+
+py manage.py createsuperuser	- to change admin details
